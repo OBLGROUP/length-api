@@ -94,8 +94,8 @@ def estimate(req: ImageRequest):
         x1, x2 = xs.min(), xs.max()
         y1, y2 = ys.min(), ys.max()
 
-        sign_width_px = x2 - x1
-        sign_height_px = y2 - y1
+        sign_width_px = int(x2 - x1)
+        sign_height_px = int(y2 - y1)
 
         if sign_width_px <= 0:
             raise HTTPException(
@@ -103,21 +103,20 @@ def estimate(req: ImageRequest):
                 detail="Detected sign width was zero."
             )
 
-        # crop and skeletonize
         crop_mask = mask[y1:y2 + 1, x1:x2 + 1]
         skeleton = skeletonize(crop_mask > 0)
 
-        line_length_px = measure_line_length_px(skeleton)
+        line_length_px = float(measure_line_length_px(skeleton))
 
-        line_length_ratio = line_length_px / sign_width_px
-        sign_aspect_ratio = sign_height_px / sign_width_px
+        line_length_ratio = float(line_length_px / sign_width_px)
+        sign_aspect_ratio = float(sign_height_px / sign_width_px)
 
         return {
-            "line_length_ratio": line_length_ratio,
-            "sign_aspect_ratio": sign_aspect_ratio,
-            "line_length_px": line_length_px,
-            "sign_width_px": sign_width_px,
-            "sign_height_px": sign_height_px
+            "line_length_ratio": float(line_length_ratio),
+            "sign_aspect_ratio": float(sign_aspect_ratio),
+            "line_length_px": float(line_length_px),
+            "sign_width_px": int(sign_width_px),
+            "sign_height_px": int(sign_height_px)
         }
 
     except HTTPException:
